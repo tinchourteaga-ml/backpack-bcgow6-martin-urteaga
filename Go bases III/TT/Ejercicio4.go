@@ -50,13 +50,10 @@ func main() {
 	ch1 := make(chan float64)
 	ch2 := make(chan float64)
 	ch3 := make(chan float64)
-	sliceOfSlices := [][]int{}
 	variable1 := rand.Perm(100)
 	variable2 := rand.Perm(1000)
 	variable3 := rand.Perm(10000)
-	sliceOfSlices = append(sliceOfSlices, variable1)
-	sliceOfSlices = append(sliceOfSlices, variable2)
-	sliceOfSlices = append(sliceOfSlices, variable3)
+	sliceOfSlices := [][]int{variable1, variable2, variable3}
 
 	for i, slc := range sliceOfSlices {
 		go bubbleSort(slc, ch1)
