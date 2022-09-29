@@ -28,6 +28,7 @@ func sumarProductos(productos []Producto, canal chan float64) {
 		sum += prod.Precio * float64(prod.Cantidad)
 	}
 	canal <- sum
+	close(canal)
 }
 
 func sumarServicios(servicios []Servicio, canal chan float64) {
@@ -36,6 +37,7 @@ func sumarServicios(servicios []Servicio, canal chan float64) {
 		sum += serv.Precio * math.Ceil(float64(serv.Minutos)/30)
 	}
 	canal <- sum
+	close(canal)
 }
 
 func sumarMantenimiento(mantenimientos []Mantenimiento, canal chan float64) {
@@ -44,11 +46,13 @@ func sumarMantenimiento(mantenimientos []Mantenimiento, canal chan float64) {
 		sum += mant.Precio
 	}
 	canal <- sum
+	close(canal)
 }
 
 func main() {
-	var total float64
-	canal := make(chan float64)
+	c1 := make(chan float64)
+	c2 := make(chan float64)
+	c3 := make(chan float64)
 
 	p1 := Producto{Nombre: "Heladera", Precio: 1000, Cantidad: 1}
 	p2 := Producto{Nombre: "Mouse", Precio: 3000, Cantidad: 5}
@@ -61,12 +65,13 @@ func main() {
 	servicios := []Servicio{s1, s2}
 	mantenimientos := []Mantenimiento{m1}
 
-	go sumarProductos(productos, canal)
-	total += <-canal
-	go sumarServicios(servicios, canal)
-	total += <-canal
-	go sumarMantenimiento(mantenimientos, canal)
-	total += <-canal
+	go sumarProductos(productos, c1)
+	go sumarServicios(servicios, c2)
+	go sumarMantenimiento(mantenimientos, c3)
 
-	fmt.Println("Monto total: $", total)
+	t1 := <-c1
+	t2 := <-c2
+	t3 := <-c3
+
+	fmt.Println("Monto total: $", t1+t2+t3)
 }
