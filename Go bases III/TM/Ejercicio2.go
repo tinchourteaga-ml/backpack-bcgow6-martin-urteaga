@@ -22,3 +22,16 @@ func main() {
 	}
 	fmt.Printf("\t %.2f\t \n", sum)
 }
+
+// Solucion mas friendly
+/* func main() {
+	read, err := os.ReadFile("../ejercicio1/productos.csv")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	//fmt.Println(string(read)) // formato byte
+	data := string(read)
+	fmt.Println(strings.ReplaceAll(data, ";", "\t\t\t"))
+} */
