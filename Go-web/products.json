@@ -1,0 +1,12 @@
+{
+    "producto": {   
+        "id": 1,
+        "nombre": "raqueta",
+        "color": "verde",
+        "precio": 6000,
+        "stock": 25,
+        "codigo": "AB230F",
+        "publicado": true,
+        "fecha_creacion": "23/10/2021"
+    }
+}
