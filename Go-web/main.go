@@ -8,17 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var P1 = Product{
-	Id:           1,
-	Name:         "racket",
-	Color:        "green",
-	Price:        6000,
-	Stock:        25,
-	Code:         "AB230F",
-	Published:    true,
-	CreationDate: "23/10/2021",
-}
-
 type ProductsCatalog struct {
 	Products []Product
 }
