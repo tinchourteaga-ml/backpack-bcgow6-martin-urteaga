@@ -1,12 +1,24 @@
 {
-    "producto": {   
-        "id": 1,
-        "nombre": "raqueta",
-        "color": "verde",
-        "precio": 6000,
-        "stock": 25,
-        "codigo": "AB230F",
-        "publicado": true,
-        "fecha_creacion": "23/10/2021"
-    }
+    "products": [   
+        {
+            "id": 1,
+            "name": "racket",
+            "color": "green",
+            "price": 6000,
+            "stock": 25,
+            "code": "AB230F",
+            "published": true,
+            "creationDate": "23-10-2021"
+        },
+        {
+            "id": 2,
+            "name": "volleyball",
+            "color": "blue and white",
+            "price": 5000,
+            "stock": 38,
+            "code": "AB231F",
+            "published": true,
+            "creationDate": "10-09-2022"
+        }
+    ]
 }
