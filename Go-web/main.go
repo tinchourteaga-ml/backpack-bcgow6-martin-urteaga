@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +33,6 @@ func getAllHandler(ctx *gin.Context) {
 	file, _ := ioutil.ReadFile("products.json")
 	catalog := ProductsCatalog{}
 	json.Unmarshal([]byte(file), &catalog)
-	fmt.Println(catalog)
 	ctx.JSON(200, catalog)
 }
 
