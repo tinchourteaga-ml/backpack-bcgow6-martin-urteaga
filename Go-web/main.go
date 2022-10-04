@@ -2,11 +2,17 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
+
+var AUTH_TOKEN = "123ABC"
+var catalog = ProductsCatalog{}
+var products []ProductDTO
 
 type ProductsCatalog struct {
 	Products []Product
@@ -23,7 +29,16 @@ type Product struct {
 	CreationDate string
 }
 
-var Catalog = ProductsCatalog{}
+type ProductDTO struct {
+	Id           int    `json:"id" binding:"required"`
+	Name         string `json:"name" binding:"required"`
+	Color        string `json:"color" binding:"required"`
+	Price        string `json:"price" binding:"required"`
+	Stock        string `json:"stock" binding:"required"`
+	Code         string `json:"code" binding:"required"`
+	Published    string `json:"published" binding:"required"`
+	CreationDate string `json:"creationDate" binding:"required"`
+}
 
 // Hidratamos el catalogo con los productos el archivo json
 func readJSON() error {
@@ -33,7 +48,7 @@ func readJSON() error {
 		return err
 	}
 
-	json.Unmarshal([]byte(file), &Catalog)
+	json.Unmarshal([]byte(file), &catalog)
 	return nil
 }
 
@@ -55,7 +70,8 @@ func getAllHandler(ctx *gin.Context) {
 	published := ctx.Query("published")
 	creationDate := ctx.Query("creationDate")
 
-	for _, prod := range Catalog.Products {
+	for _, prod := range catalog.Products {
+		// Si quisieramos que no nos tire el valor default, podemos hacer que el tipo sea puntero, entonces devuelve nil
 		if prod.Id == id || prod.Name == name || prod.Color == color || prod.Price == price || prod.Stock == stock || prod.Code == code || prod.Published == published || prod.CreationDate == creationDate {
 			filteredCatalog.Products = append(filteredCatalog.Products, prod)
 		}
@@ -64,14 +80,14 @@ func getAllHandler(ctx *gin.Context) {
 	if len(filteredCatalog.Products) > 0 {
 		ctx.JSON(200, filteredCatalog)
 	} else {
-		ctx.JSON(200, Catalog)
+		ctx.JSON(200, catalog)
 	}
 }
 
 func productFilterHandler(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	found := false
-	for _, prod := range Catalog.Products {
+	for _, prod := range catalog.Products {
 		if prod.Id == id {
 			ctx.JSON(200, prod)
 			found = true
@@ -86,6 +102,47 @@ func productFilterHandler(ctx *gin.Context) {
 	}
 }
 
+func validateAuthToken(ctx *gin.Context) bool {
+
+	token := ctx.GetHeader("token")
+
+	if token != AUTH_TOKEN {
+		ctx.JSON(401, gin.H{
+			"error": "no tiene permisos para realizar la petición solicitada",
+		})
+		return false
+	}
+	ctx.JSON(200, "OK")
+	return true
+}
+
+func addHandler(ctx *gin.Context) {
+	var req ProductDTO
+	var lastId int
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, gin.H{
+			"error": fmt.Sprintf("el campo %s es requerido", strings.Split(err.Error(), "'")[3]),
+		})
+		return
+	}
+
+	if !validateAuthToken(ctx) {
+		return
+	}
+
+	if len(products) > 0 {
+		lastId = products[len(products)-1].Id
+	} else {
+		lastId = catalog.Products[len(catalog.Products)-1].Id
+	}
+	lastId++
+	req.Id = lastId
+	products = append(products, req)
+
+	ctx.JSON(200, req)
+}
+
 func main() {
 	err := readJSON()
 
@@ -97,5 +154,6 @@ func main() {
 	router.GET("/greetings", greetingsHandler)
 	router.GET("/products", getAllHandler)
 	router.GET("/products/:id", productFilterHandler)
+	router.POST("/products/add", addHandler)
 	router.Run()
 }
