@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -36,7 +37,7 @@ func validateAuthToken(ctx *gin.Context) bool {
 
 	token := ctx.GetHeader("token")
 
-	if token != AUTH_TOKEN {
+	if token != os.Getenv("AUTH_TOKEN") {
 		ctx.JSON(401, gin.H{
 			"error": "no tiene permisos para realizar la petición solicitada",
 		})

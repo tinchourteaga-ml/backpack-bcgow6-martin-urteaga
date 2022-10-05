@@ -1,12 +1,22 @@
 package main
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/cmd/server/handler"
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/internal/products"
 )
 
 func main() {
+	err := godotenv.Load()
+
+	if err != nil {
+		fmt.Println(errors.New("error: no se han podido leer las variables de entorno"))
+	}
+
 	repo := products.NewRepository()
 	service := products.NewService(repo)
 	prod := handler.NewProduct(service)
