@@ -91,10 +91,13 @@ func (r *repository) Store(id int, name, color, price, stock, code, published, c
 }
 
 func (r *repository) Delete(id int) error {
-	deleted := false
+	var catalog ProductsCatalog
 	var index int
+	deleted := false
 
-	for i, prod := range Catalog.Products {
+	r.db.Read(&catalog.Products)
+
+	for i, prod := range catalog.Products {
 		if prod.Id == id {
 			index = i
 			deleted = true
@@ -105,46 +108,64 @@ func (r *repository) Delete(id int) error {
 		return fmt.Errorf("no existe el producto con id %d", id)
 	}
 
-	Catalog.Products = append(Catalog.Products[:index], Catalog.Products[index+1:]...)
+	catalog.Products = append(catalog.Products[:index], catalog.Products[index+1:]...)
+
+	if err := r.db.Write(catalog.Products); err != nil {
+		return err
+	}
 
 	return nil
 }
 
 func (r *repository) Update(id int, name, color, price, stock, code, published, creationDate string) (Product, error) {
+	var catalog ProductsCatalog
 	p := Product{Name: name, Color: color, Price: price, Stock: stock, Code: code, Published: published, CreationDate: creationDate}
 	updated := false
 
-	for i, prod := range Catalog.Products {
+	r.db.Read(&catalog.Products)
+
+	for i, prod := range catalog.Products {
 		if prod.Id == id {
 			p.Id = id
-			Catalog.Products[i] = p
+			catalog.Products[i] = p
 			updated = true
 		}
 	}
 
 	if !updated {
 		return Product{}, fmt.Errorf("no existe el producto con id %d", id)
+	}
+
+	if err := r.db.Write(catalog.Products); err != nil {
+		return Product{}, err
 	}
 
 	return p, nil
 }
 
 func (r *repository) UpdateNameAndPrice(id int, name, price string) (Product, error) {
+	var catalog ProductsCatalog
 	var p Product
 	updated := false
 
-	for i, prod := range Catalog.Products {
+	r.db.Read(&catalog.Products)
+
+	for i, prod := range catalog.Products {
 		if prod.Id == id {
 			prod.Name = name
 			prod.Price = price
 			p = prod
-			Catalog.Products[i] = p
+			catalog.Products[i] = p
 			updated = true
 		}
 	}
 
 	if !updated {
 		return Product{}, fmt.Errorf("no existe el producto con id %d", id)
+	}
+
+	if err := r.db.Write(catalog.Products); err != nil {
+		return Product{}, err
 	}
 
 	return p, nil
