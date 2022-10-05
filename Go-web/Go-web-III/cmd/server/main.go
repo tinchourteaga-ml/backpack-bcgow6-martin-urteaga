@@ -16,5 +16,8 @@ func main() {
 	pr.POST("/add", prod.Store())
 	pr.GET("/catalog", prod.GetAll())
 	pr.GET("/catalog/:id", prod.GetAll())
+	pr.DELETE("catalog/:id", prod.Delete())
+	pr.PUT("/catalog/:id", prod.Update())
+	pr.PATCH("/catalog/:id", prod.UpdateNameAndPrice())
 	router.Run()
 }
