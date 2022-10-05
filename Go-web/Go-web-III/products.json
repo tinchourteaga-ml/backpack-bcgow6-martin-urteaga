@@ -38,15 +38,5 @@
     "Code": "AB233F",
     "Published": "false",
     "CreationDate": "23-10-2021"
-  },
-  {
-    "Id": 5,
-    "Name": "shirt",
-    "Color": "white",
-    "Price": "12000",
-    "Stock": "14",
-    "Code": "AB235F",
-    "Published": "true",
-    "CreationDate": "12-12-2019"
   }
 ]

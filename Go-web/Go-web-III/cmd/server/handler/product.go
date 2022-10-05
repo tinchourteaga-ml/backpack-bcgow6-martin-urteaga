@@ -75,6 +75,27 @@ func (p *Product) GetAll() gin.HandlerFunc {
 	}
 }
 
+func (p *Product) GetSpecific() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+
+		if !validateAuthToken(ctx) {
+			return
+		}
+
+		prod, err := p.service.GetSpecific(id)
+
+		if err != nil {
+			ctx.JSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		ctx.JSON(200, prod)
+	}
+}
+
 func (p *Product) Store() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req ProductDTO

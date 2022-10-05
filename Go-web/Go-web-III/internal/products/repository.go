@@ -11,6 +11,7 @@ var Catalog = ProductsCatalog{}
 
 type Repository interface {
 	GetAll(filter pkg.Filter) ([]Product, error)
+	GetSpecific(id int) (Product, error)
 	Store(id int, name, color, price, stock, code, published, creationDate string) (Product, error)
 	LastId() (int, error)
 	Delete(id int) error
@@ -60,6 +61,28 @@ func (r *repository) GetAll(filter pkg.Filter) ([]Product, error) {
 	} else {
 		return catalog.Products, nil
 	}
+}
+
+func (r *repository) GetSpecific(id int) (Product, error) {
+	var catalog ProductsCatalog
+	var p Product
+	found := false
+
+	r.db.Read(&catalog.Products)
+
+	for _, prod := range catalog.Products {
+		if prod.Id == id {
+			p = prod
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return Product{}, fmt.Errorf("no existe el producto con id %d", id)
+	}
+
+	return p, nil
 }
 
 func (r *repository) LastId() (int, error) {

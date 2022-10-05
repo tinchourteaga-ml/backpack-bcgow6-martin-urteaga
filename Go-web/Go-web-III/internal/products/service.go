@@ -4,6 +4,7 @@ import "github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web
 
 type Service interface {
 	GetAll(filter pkg.Filter) ([]Product, error)
+	GetSpecific(id int) (Product, error)
 	Store(name, color, price, stock, code, published, creationDate string) (Product, error)
 	Delete(id int) error
 	Update(id int, name, color, price, stock, code, published, creationDate string) (Product, error)
@@ -28,6 +29,16 @@ func (s *service) GetAll(filter pkg.Filter) ([]Product, error) {
 	}
 
 	return prods, nil
+}
+
+func (s *service) GetSpecific(id int) (Product, error) {
+	prod, err := s.repository.GetSpecific(id)
+
+	if err != nil {
+		return Product{}, err
+	}
+
+	return prod, nil
 }
 
 func (s *service) Store(name, color, price, stock, code, published, creationDate string) (Product, error) {
