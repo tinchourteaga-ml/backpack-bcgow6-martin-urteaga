@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/cmd/server/handler"
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/internal/products"
+	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/pkg/store"
 )
 
 func main() {
@@ -17,7 +18,8 @@ func main() {
 		fmt.Println(errors.New("error: no se han podido leer las variables de entorno"))
 	}
 
-	repo := products.NewRepository()
+	db := store.New(store.FileType, "./products.json")
+	repo := products.NewRepository(db)
 	service := products.NewService(repo)
 	prod := handler.NewProduct(service)
 

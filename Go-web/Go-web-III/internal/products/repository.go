@@ -1,14 +1,13 @@
 package products
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/pkg"
+	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/pkg/store"
 )
 
 var Catalog = ProductsCatalog{}
-var lastId int
 
 type Repository interface {
 	GetAll(filter pkg.Filter) ([]Product, error)
@@ -34,17 +33,23 @@ type Product struct {
 	CreationDate string
 }
 
-type repository struct{}
+type repository struct {
+	db store.Store
+}
 
-func NewRepository() Repository {
-	file, _ := pkg.ReadJSON()
-	json.Unmarshal(file, &Catalog)
-	return &repository{}
+func NewRepository(db store.Store) Repository {
+	return &repository{
+		db: db,
+	}
 }
 
 func (r *repository) GetAll(filter pkg.Filter) ([]Product, error) {
 	var filteredCatalog ProductsCatalog
-	for _, prod := range Catalog.Products {
+	var catalog ProductsCatalog
+
+	r.db.Read(&catalog.Products)
+
+	for _, prod := range catalog.Products {
 		if prod.Id == filter.Id || prod.Name == filter.Name || prod.Color == filter.Color || prod.Price == filter.Price || prod.Stock == filter.Stock || prod.Code == filter.Code || prod.Published == filter.Published || prod.CreationDate == filter.CreationDate {
 			filteredCatalog.Products = append(filteredCatalog.Products, prod)
 		}
@@ -53,13 +58,18 @@ func (r *repository) GetAll(filter pkg.Filter) ([]Product, error) {
 	if len(filteredCatalog.Products) > 0 {
 		return filteredCatalog.Products, nil
 	} else {
-		return Catalog.Products, nil
+		return catalog.Products, nil
 	}
 }
 
 func (r *repository) LastId() (int, error) {
-	if len(Catalog.Products) > 0 {
-		lastId = Catalog.Products[len(Catalog.Products)-1].Id
+	var catalog ProductsCatalog
+	var lastId int
+
+	r.db.Read(&catalog.Products)
+
+	if len(catalog.Products) > 0 {
+		lastId = catalog.Products[len(catalog.Products)-1].Id
 	} else {
 		lastId = 0
 	}
@@ -67,8 +77,16 @@ func (r *repository) LastId() (int, error) {
 }
 
 func (r *repository) Store(id int, name, color, price, stock, code, published, creationDate string) (Product, error) {
+	var catalog ProductsCatalog
 	prod := Product{id, name, color, price, stock, code, published, creationDate}
-	Catalog.Products = append(Catalog.Products, prod)
+
+	r.db.Read(&catalog.Products)
+	catalog.Products = append(catalog.Products, prod)
+
+	if err := r.db.Write(catalog.Products); err != nil {
+		return Product{}, err
+	}
+
 	return prod, nil
 }
 
