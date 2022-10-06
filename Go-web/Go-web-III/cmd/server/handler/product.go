@@ -45,6 +45,15 @@ func validateAuthToken(ctx *gin.Context) bool {
 	return true
 }
 
+// ListProducts godoc
+// @Summary List products
+// @Tags Products
+// @Description get products
+// @Accept json
+// @Produce json
+// @Param token header string true "token"
+// @Success 200 {object} web.Response
+// @Router /products/catalog [get]
 func (p *Product) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var filter pkg.Filter
@@ -91,6 +100,16 @@ func (p *Product) GetSpecific() gin.HandlerFunc {
 	}
 }
 
+// StoreProducts godoc
+// @Summary Store products
+// @Tags Products
+// @Description store products
+// @Accept json
+// @Produce json
+// @Param token header string true "token"
+// @Param product body request true "Product to store"
+// @Success 200 {object} web.Response
+// @Router /products/add [post]
 func (p *Product) Store() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req ProductDTO
