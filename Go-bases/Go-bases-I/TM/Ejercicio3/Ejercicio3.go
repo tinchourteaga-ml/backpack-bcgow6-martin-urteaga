@@ -1,3 +1,6 @@
+package Ejercicio3
+
+/*
 var 1nombre string // MAL: las variables no pueden comenzar con un numero
 var nombre string
 
@@ -16,3 +19,4 @@ var estatura de la persona int // MAL: las variables no pueden tener espacios (d
 var estaturaDeLaPersona int
 
 cantidadDeHijos := 2 // BIEN
+*/

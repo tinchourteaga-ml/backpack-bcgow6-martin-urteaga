@@ -107,7 +107,7 @@ func (p *Product) GetSpecific() gin.HandlerFunc {
 // @Accept json
 // @Produce json
 // @Param token header string true "token"
-// @Param product body request true "Product to store"
+// @Param product body string true "Product to store"
 // @Success 200 {object} web.Response
 // @Router /products/add [post]
 func (p *Product) Store() gin.HandlerFunc {

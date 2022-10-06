@@ -1,3 +1,6 @@
+package Ejercicio4
+
+/*
 var apellido string = "Gomez" // BIEN
 
 var edad int = "35" // MAL
@@ -10,3 +13,4 @@ var sueldo string = 45857.90 // MAL
 var sueldo float64 = 45857.90
 
 var nombre string = "Julián" // BIEN
+*/
