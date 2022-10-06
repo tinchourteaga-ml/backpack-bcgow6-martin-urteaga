@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/internal/products"
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/pkg"
+	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Go-web/Go-web-III/pkg/web"
 )
 
 var AUTH_TOKEN = "123ABC"
@@ -38,9 +39,7 @@ func validateAuthToken(ctx *gin.Context) bool {
 	token := ctx.GetHeader("token")
 
 	if token != os.Getenv("AUTH_TOKEN") {
-		ctx.JSON(401, gin.H{
-			"error": "no tiene permisos para realizar la petición solicitada",
-		})
+		ctx.JSON(401, web.NewResponse(401, nil, "no tiene permisos para realizar la petición solicitada"))
 		return false
 	}
 	return true
@@ -65,13 +64,11 @@ func (p *Product) GetAll() gin.HandlerFunc {
 		prods, err := p.service.GetAll(filter)
 
 		if err != nil {
-			ctx.JSON(400, gin.H{
-				"error": err.Error(),
-			})
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprint(err)))
 			return
 		}
 
-		ctx.JSON(200, prods)
+		ctx.JSON(200, web.NewResponse(200, prods, ""))
 	}
 }
 
@@ -86,13 +83,11 @@ func (p *Product) GetSpecific() gin.HandlerFunc {
 		prod, err := p.service.GetSpecific(id)
 
 		if err != nil {
-			ctx.JSON(400, gin.H{
-				"error": err.Error(),
-			})
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprint(err)))
 			return
 		}
 
-		ctx.JSON(200, prod)
+		ctx.JSON(200, web.NewResponse(200, prod, ""))
 	}
 }
 
@@ -114,13 +109,11 @@ func (p *Product) Store() gin.HandlerFunc {
 		prod, err := p.service.Store(req.Name, req.Color, req.Price, req.Stock, req.Code, req.Published, req.CreationDate)
 
 		if err != nil {
-			ctx.JSON(400, gin.H{
-				"error": err.Error(),
-			})
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprint(err)))
 			return
 		}
 
-		ctx.JSON(200, prod)
+		ctx.JSON(200, web.NewResponse(200, prod, ""))
 	}
 }
 
@@ -133,24 +126,17 @@ func (p *Product) Delete() gin.HandlerFunc {
 		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 
 		if err != nil {
-			ctx.JSON(400, gin.H{
-				"error": "id inválido",
-			})
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprint(err)))
 			return
 		}
 
 		err = p.service.Delete(int(id))
 
 		if err != nil {
-			ctx.JSON(404, gin.H{
-				"error": err.Error(),
-			})
+			ctx.JSON(404, web.NewResponse(404, nil, fmt.Sprint(err)))
 			return
 		}
-
-		ctx.JSON(200, gin.H{
-			"msg": fmt.Sprintf("El producto con id %d ha sido eliminado", id),
-		})
+		ctx.JSON(200, web.NewResponse(200, fmt.Sprintf("El producto con id %d ha sido eliminado", id), ""))
 	}
 }
 
@@ -165,29 +151,22 @@ func (p *Product) Update() gin.HandlerFunc {
 		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 
 		if err != nil {
-			ctx.JSON(400, gin.H{
-				"error": "id inválido",
-			})
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprint(err)))
 			return
 		}
 
 		if err := ctx.ShouldBindJSON(&req); err != nil {
-			ctx.JSON(400, gin.H{
-				"error": fmt.Sprintf("el campo %s es requerido", strings.Split(err.Error(), "'")[3]),
-			})
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprintf("el campo %s es requerido", strings.Split(err.Error(), "'")[3])))
 			return
 		}
 
 		prod, err := p.service.Update(int(id), req.Name, req.Color, req.Price, req.Stock, req.Code, req.Published, req.CreationDate)
 
 		if err != nil {
-			ctx.JSON(404, gin.H{
-				"error": err.Error(),
-			})
+			ctx.JSON(404, web.NewResponse(404, nil, fmt.Sprint(err)))
 			return
 		}
-
-		ctx.JSON(200, prod)
+		ctx.JSON(200, web.NewResponse(200, prod, ""))
 	}
 }
 
@@ -202,23 +181,17 @@ func (p *Product) UpdateNameAndPrice() gin.HandlerFunc {
 		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 
 		if err != nil {
-			ctx.JSON(400, gin.H{
-				"error": "id inválido",
-			})
+			ctx.JSON(404, web.NewResponse(404, nil, "id inválido"))
 			return
 		}
 
 		if err := ctx.ShouldBindJSON(&req); err != nil {
 			if req.Name == "" {
-				ctx.JSON(400, gin.H{
-					"error": fmt.Sprint("el campo Name es requerido"),
-				})
+				ctx.JSON(400, web.NewResponse(400, nil, "el campo Name es requerido"))
 				return
 			}
 			if req.Price == "" {
-				ctx.JSON(400, gin.H{
-					"error": fmt.Sprint("el campo Price es requerido"),
-				})
+				ctx.JSON(400, web.NewResponse(400, nil, "el campo Price es requerido"))
 				return
 			}
 		}
@@ -226,12 +199,10 @@ func (p *Product) UpdateNameAndPrice() gin.HandlerFunc {
 		prod, err := p.service.UpdateNameAndPrice((int(id)), req.Name, req.Price)
 
 		if err != nil {
-			ctx.JSON(404, gin.H{
-				"error": err.Error(),
-			})
+			ctx.JSON(404, web.NewResponse(404, nil, fmt.Sprint(err)))
 			return
 		}
 
-		ctx.JSON(200, prod)
+		ctx.JSON(200, web.NewResponse(200, prod, ""))
 	}
 }
