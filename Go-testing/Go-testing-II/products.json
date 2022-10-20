@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "Name": "racket",
+    "Color": "green",
+    "Price": "6000",
+    "Stock": "25",
+    "Code": "AB230F",
+    "Published": "true",
+    "CreationDate": "23-10-2021"
+  },
+  {
+    "Id": 2,
+    "Name": "volleyball",
+    "Color": "white",
+    "Price": "5000",
+    "Stock": "38",
+    "Code": "AB231F",
+    "Published": "true",
+    "CreationDate": "10-09-2022"
+  },
+  {
+    "Id": 3,
+    "Name": "skateboard",
+    "Color": "green",
+    "Price": "23000",
+    "Stock": "10",
+    "Code": "AB232F",
+    "Published": "false",
+    "CreationDate": "12-06-2020"
+  },
+  {
+    "Id": 4,
+    "Name": "short",
+    "Color": "black",
+    "Price": "5000",
+    "Stock": "10",
+    "Code": "AB233F",
+    "Published": "false",
+    "CreationDate": "23-10-2021"
+  }
+]
