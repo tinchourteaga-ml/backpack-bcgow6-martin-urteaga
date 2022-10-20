@@ -70,4 +70,5 @@ func TestUpdateNameAndPrice(t *testing.T) {
 	product, _ := repo.UpdateNameAndPrice(1, "short", "2500")
 
 	assert.Equal(t, expectedProduct, product)
+	assert.True(t, mockedStorage.ReadWasCalled)
 }
