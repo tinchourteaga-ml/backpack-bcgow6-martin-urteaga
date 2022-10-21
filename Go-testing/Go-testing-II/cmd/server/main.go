@@ -49,5 +49,9 @@ func main() {
 	pr.DELETE("catalog/:id", prod.Delete())
 	pr.PUT("/catalog/:id", prod.Update())
 	pr.PATCH("/catalog/:id", prod.UpdateNameAndPrice())
-	router.Run()
+	err = router.Run()
+
+	if err != nil {
+		panic("error en la creacion del servidor")
+	}
 }

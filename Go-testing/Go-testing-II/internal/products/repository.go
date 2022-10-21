@@ -48,7 +48,11 @@ func (r *repository) GetAll(filter pkg.Filter) ([]Product, error) {
 	var filteredCatalog ProductsCatalog
 	var catalog ProductsCatalog
 
-	r.db.Read(&catalog.Products)
+	err := r.db.Read(&catalog.Products)
+
+	if err != nil {
+		return []Product{}, err
+	}
 
 	for _, prod := range catalog.Products {
 		if prod.Id == filter.Id || prod.Name == filter.Name || prod.Color == filter.Color || prod.Price == filter.Price || prod.Stock == filter.Stock || prod.Code == filter.Code || prod.Published == filter.Published || prod.CreationDate == filter.CreationDate {
@@ -68,7 +72,11 @@ func (r *repository) GetSpecific(id int) (Product, error) {
 	var p Product
 	found := false
 
-	r.db.Read(&catalog.Products)
+	err := r.db.Read(&catalog.Products)
+
+	if err != nil {
+		return Product{}, err
+	}
 
 	for _, prod := range catalog.Products {
 		if prod.Id == id {
@@ -89,7 +97,11 @@ func (r *repository) LastId() (int, error) {
 	var catalog ProductsCatalog
 	var lastId int
 
-	r.db.Read(&catalog.Products)
+	err := r.db.Read(&catalog.Products)
+
+	if err != nil {
+		return 0, err
+	}
 
 	if len(catalog.Products) > 0 {
 		lastId = catalog.Products[len(catalog.Products)-1].Id
@@ -103,7 +115,12 @@ func (r *repository) Store(id int, name, color, price, stock, code, published, c
 	var catalog ProductsCatalog
 	prod := Product{id, name, color, price, stock, code, published, creationDate}
 
-	r.db.Read(&catalog.Products)
+	err := r.db.Read(&catalog.Products)
+
+	if err != nil {
+		return Product{}, err
+	}
+
 	catalog.Products = append(catalog.Products, prod)
 
 	if err := r.db.Write(catalog.Products); err != nil {
@@ -118,7 +135,11 @@ func (r *repository) Delete(id int) error {
 	var index int
 	deleted := false
 
-	r.db.Read(&catalog.Products)
+	err := r.db.Read(&catalog.Products)
+
+	if err != nil {
+		return err
+	}
 
 	for i, prod := range catalog.Products {
 		if prod.Id == id {
@@ -145,7 +166,11 @@ func (r *repository) Update(id int, name, color, price, stock, code, published, 
 	p := Product{Name: name, Color: color, Price: price, Stock: stock, Code: code, Published: published, CreationDate: creationDate}
 	updated := false
 
-	r.db.Read(&catalog.Products)
+	err := r.db.Read(&catalog.Products)
+
+	if err != nil {
+		return Product{}, err
+	}
 
 	for i, prod := range catalog.Products {
 		if prod.Id == id {
@@ -171,7 +196,11 @@ func (r *repository) UpdateNameAndPrice(id int, name, price string) (Product, er
 	var p Product
 	updated := false
 
-	r.db.Read(&catalog.Products)
+	err := r.db.Read(&catalog.Products)
+
+	if err != nil {
+		return Product{}, err
+	}
 
 	for i, prod := range catalog.Products {
 		if prod.Id == id {
