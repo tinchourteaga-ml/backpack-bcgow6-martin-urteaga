@@ -1,7 +1,7 @@
 package products
 
 type MockStorage struct {
-	dataMock   []Product
+	DataMock   []Product
 	errOnWrite error
 	errOnRead  error
 }
@@ -12,7 +12,7 @@ func (m *MockStorage) Read(data interface{}) (err error) {
 	}
 
 	castedData := data.(*[]Product)
-	*castedData = m.dataMock
+	*castedData = m.DataMock
 	return nil
 }
 
@@ -22,6 +22,6 @@ func (m *MockStorage) Write(data interface{}) (err error) {
 	}
 
 	castedData := data.([]Product)
-	m.dataMock = append(m.dataMock, castedData[len(castedData)-1])
+	m.DataMock = append(m.DataMock, castedData[len(castedData)-1])
 	return nil
 }

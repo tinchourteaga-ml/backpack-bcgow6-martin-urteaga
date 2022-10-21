@@ -17,7 +17,7 @@ func TestServiceIntegrationGetAll(t *testing.T) {
 	}
 
 	mockStorage := MockStorage{
-		dataMock: db,
+		DataMock: db,
 	}
 
 	repository := NewRepository(&mockStorage)
@@ -37,7 +37,7 @@ func TestServiceIntegrationGetAllFail(t *testing.T) {
 	expectedErr := errors.New("error")
 
 	mockStorage := MockStorage{
-		dataMock:   nil,
+		DataMock:   nil,
 		errOnWrite: nil,
 		errOnRead:  errors.New("error"),
 	}
@@ -67,7 +67,7 @@ func TestServiceIntegrationStore(t *testing.T) {
 	}
 
 	mockStorage := MockStorage{
-		dataMock: initialDb,
+		DataMock: initialDb,
 	}
 
 	repository := NewRepository(&mockStorage)
@@ -80,7 +80,7 @@ func TestServiceIntegrationStore(t *testing.T) {
 
 	// Assert.
 	assert.Nil(t, err)
-	assert.Equal(t, expectedDb, mockStorage.dataMock)
+	assert.Equal(t, expectedDb, mockStorage.DataMock)
 	assert.Equal(t, productToCreate, result)
 }
 
@@ -89,7 +89,7 @@ func TestServiceIntegrationStoreFail(t *testing.T) {
 	expectedErr := errors.New("error")
 
 	mockStorage := MockStorage{
-		dataMock:   nil,
+		DataMock:   nil,
 		errOnRead:  nil,
 		errOnWrite: errors.New("error"),
 	}
