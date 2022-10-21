@@ -52,3 +52,20 @@ func TestDeleteProduct(t *testing.T) {
 	router.ServeHTTP(recorder, req)
 	assert.Equal(t, 200, recorder.Code)
 }
+
+func TestUpdateProduct(t *testing.T) {
+	initialDb := []products.Product{
+		{Id: 1, Name: "volleyball", Color: "white", Price: "5000", Stock: "38", Code: "AB231F", Published: "true", CreationDate: "10-09-2022"},
+		{Id: 2, Name: "football", Color: "black", Price: "8000", Stock: "15", Code: "AB233F", Published: "false", CreationDate: "11-12-2021"},
+	}
+
+	mockStorage := products.MockStorage{
+		DataMock: initialDb,
+	}
+
+	router := createServer(mockStorage)
+	req, recorder := createRequestTest(http.MethodPut, "/products/catalog/1", `{"Name": "socks", "Color": "red",
+	"Price": "8000", "Stock": "30", "Code": "AB236F", "Published": "true", "CreationDate": "01-01-2022"}`)
+	router.ServeHTTP(recorder, req)
+	assert.Equal(t, 200, recorder.Code)
+}
