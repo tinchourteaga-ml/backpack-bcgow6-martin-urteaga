@@ -1,0 +1,18 @@
+Una mueblería necesita la implementación de una base de datos para controlar las ventas que realiza por día, 
+el stock de sus artículos (productos) y la lista de sus clientes que realizan las compras.
+
+Se necesita plantear:
+¿Cuáles serían las entidades de este sistema?
+Cliente, Producto, Compra.
+
+¿Qué atributos se determinarán para cada entidad? (Considerar los que se crean necesarios)
+Cliente: dni, nombre, apellido
+Compra: codOperacion, productos, cliente
+Producto: codProducto, precio, cantidad
+
+¿Cómo se conformarán las relaciones entre entidades? ¿Cuáles serían las cardinalidades?
+Cliente -|--- tiene ---<- Compra (un cliente tiene muchas compras, una compra tiene un cliente)
+Compra -|--- tiene ---<- Producto (una compra tiene muchos productos, un producto tiene una compra)
+
+Realizar un DER para modelar el escenario planteado.
+Realizado en otro archivo
