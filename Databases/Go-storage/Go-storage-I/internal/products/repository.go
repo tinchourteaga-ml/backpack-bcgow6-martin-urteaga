@@ -15,8 +15,9 @@ type Repository interface {
 type repository struct{}
 
 var (
-	db           = store.StorageDB
-	storeProduct = "INSERT INTO products(name, qty, price) VALUES (?, ?, ?)"
+	db               = store.StorageDB
+	storeProduct     = "INSERT INTO products(name, qty, price) VALUES (?, ?, ?)"
+	getProductByName = "SELECT * FROM products WHERE name = ?"
 )
 
 func newRepository() Repository {
@@ -50,5 +51,21 @@ func (repo *repository) Store(product domain.Product) (domain.Product, error) {
 }
 
 func (repo *repository) GetByName(productName string) domain.Product {
-	return domain.Product{}
+	var product domain.Product
+
+	rows, err := db.Query(getProductByName, productName)
+
+	if err != nil {
+		log.Println(err)
+		return product
+	}
+
+	for rows.Next() {
+		if err := rows.Scan(&product.ID, &product.Name, &product.Qty, &product.Price); err != nil {
+			log.Println(err)
+			return product
+		}
+	}
+
+	return product
 }
