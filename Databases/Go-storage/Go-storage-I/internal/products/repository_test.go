@@ -12,7 +12,6 @@ import (
 func TestStore(t *testing.T) {
 	db := store.Init()
 	product := domain.Product{
-		ID:          7,
 		Name:        "Heladera",
 		Qty:         1,
 		Price:       120000,
@@ -21,13 +20,13 @@ func TestStore(t *testing.T) {
 
 	repo := newRepository(db)
 
-	result, err := repo.Store(product)
+	result, err := repo.Store(&product)
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	assert.Equal(t, product, result)
+	assert.Equal(t, &product, result)
 }
 
 func TestGetByName(t *testing.T) {

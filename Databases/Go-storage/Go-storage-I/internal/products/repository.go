@@ -8,7 +8,7 @@ import (
 )
 
 type Repository interface {
-	Store(product domain.Product) (domain.Product, error)
+	Store(product *domain.Product) (*domain.Product, error)
 	GetByName(productName string) domain.Product
 }
 
@@ -27,7 +27,7 @@ func newRepository(storage *sql.DB) Repository {
 	}
 }
 
-func (repo *repository) Store(product domain.Product) (domain.Product, error) {
+func (repo *repository) Store(product *domain.Product) (*domain.Product, error) {
 	stmt, err := repo.db.Prepare(storeProduct)
 
 	if err != nil {
@@ -39,13 +39,13 @@ func (repo *repository) Store(product domain.Product) (domain.Product, error) {
 	result, err := stmt.Exec(product.Name, product.Qty, product.Price, product.WarehouseID)
 
 	if err != nil {
-		return domain.Product{}, err
+		return nil, err
 	}
 
 	insertedID, err := result.LastInsertId()
 
 	if err != nil {
-		return domain.Product{}, err
+		return nil, err
 	}
 
 	product.ID = int(insertedID)
