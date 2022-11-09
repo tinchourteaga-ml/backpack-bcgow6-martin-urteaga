@@ -1,7 +1,6 @@
 package products
 
 import (
-	"log"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,7 +8,7 @@ import (
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I/pkg/store"
 )
 
-func TestStore(t *testing.T) {
+/* func TestStore(t *testing.T) {
 	db := store.Init()
 	product := domain.Product{
 		Name:        "Heladera",
@@ -40,4 +39,32 @@ func TestGetByName(t *testing.T) {
 	result := repo.GetByName(product.Name)
 
 	assert.Equal(t, product.Name, result.Name)
+} */
+
+func TestGetAll(t *testing.T) {
+	db := store.Init()
+
+	var products = []domain.Product{
+		{
+			ID:          1,
+			Name:        "heladera",
+			Qty:         1,
+			Price:       120000,
+			WarehouseID: 0,
+		},
+		{
+			ID:          2,
+			Name:        "televisor",
+			Qty:         3,
+			Price:       75000,
+			WarehouseID: 0,
+		},
+	}
+
+	repo := newRepository(db)
+
+	result, err := repo.GetAll()
+
+	assert.Nil(t, err)
+	assert.Equal(t, products, result)
 }

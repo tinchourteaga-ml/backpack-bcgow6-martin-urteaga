@@ -108,6 +108,8 @@ func (repo *repository) Delete(id int) error {
 		return err
 	}
 
+	defer stmt.Close()
+
 	result, err := stmt.Exec(id)
 
 	if err != nil {
