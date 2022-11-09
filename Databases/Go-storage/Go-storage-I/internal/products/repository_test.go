@@ -6,16 +6,20 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I/internal/products/domain"
+	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I/pkg/store"
 )
 
 func TestStore(t *testing.T) {
+	db := store.Init()
 	product := domain.Product{
-		Name:  "Heladera",
-		Qty:   1,
-		Price: 120000,
+		ID:          7,
+		Name:        "Heladera",
+		Qty:         1,
+		Price:       120000,
+		WarehouseID: 1,
 	}
 
-	repo := newRepository()
+	repo := newRepository(db)
 
 	result, err := repo.Store(product)
 
@@ -27,11 +31,12 @@ func TestStore(t *testing.T) {
 }
 
 func TestGetByName(t *testing.T) {
+	db := store.Init()
 	product := domain.Product{
-		Name: "Televisor",
+		Name: "televisor",
 	}
 
-	repo := newRepository()
+	repo := newRepository(db)
 
 	result := repo.GetByName(product.Name)
 

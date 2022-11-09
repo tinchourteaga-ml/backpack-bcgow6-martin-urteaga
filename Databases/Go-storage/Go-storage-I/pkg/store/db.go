@@ -2,6 +2,7 @@ package store
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 
@@ -10,22 +11,22 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var StorageDB *sql.DB
-
-func init() {
-	dataSource := "root:@tcp(localhost.3306)/storage"
+func Init() *sql.DB {
+	dataSource := "root:@tcp(localhost:3306)/storage"
 
 	StorageDB, err := sql.Open("mysql", dataSource)
 
 	if err != nil {
-		panic(err)
+		fmt.Println("ERROR 1")
 	}
 
 	if err = StorageDB.Ping(); err != nil {
-		panic(err)
+		fmt.Println("ERROR DE PING")
 	}
 
 	log.Println("database configured")
+
+	return StorageDB
 }
 
 // Otra forma de inicializar la conexion

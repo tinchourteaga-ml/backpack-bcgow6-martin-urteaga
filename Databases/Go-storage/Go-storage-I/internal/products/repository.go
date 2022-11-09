@@ -1,10 +1,10 @@
 package products
 
 import (
+	"database/sql"
 	"log"
 
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I/internal/products/domain"
-	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I/pkg/store"
 )
 
 type Repository interface {
@@ -12,20 +12,23 @@ type Repository interface {
 	GetByName(productName string) domain.Product
 }
 
-type repository struct{}
+type repository struct {
+	db *sql.DB
+}
 
 var (
-	db               = store.StorageDB
-	storeProduct     = "INSERT INTO products(name, qty, price) VALUES (?, ?, ?)"
-	getProductByName = "SELECT * FROM products WHERE name = ?"
+	storeProduct     = "INSERT INTO products(name, qty, price, id_warehouse) VALUES (?, ?, ?, ?)"
+	getProductByName = "SELECT name FROM products WHERE products.name = ?"
 )
 
-func newRepository() Repository {
-	return &repository{}
+func newRepository(storage *sql.DB) Repository {
+	return &repository{
+		db: storage,
+	}
 }
 
 func (repo *repository) Store(product domain.Product) (domain.Product, error) {
-	stmt, err := db.Prepare(storeProduct)
+	stmt, err := repo.db.Prepare(storeProduct)
 
 	if err != nil {
 		log.Fatal(err)
@@ -33,7 +36,7 @@ func (repo *repository) Store(product domain.Product) (domain.Product, error) {
 
 	defer stmt.Close()
 
-	result, err := stmt.Exec(product.Name, product.Qty, product.Price)
+	result, err := stmt.Exec(product.Name, product.Qty, product.Price, product.WarehouseID)
 
 	if err != nil {
 		return domain.Product{}, err
@@ -53,7 +56,7 @@ func (repo *repository) Store(product domain.Product) (domain.Product, error) {
 func (repo *repository) GetByName(productName string) domain.Product {
 	var product domain.Product
 
-	rows, err := db.Query(getProductByName, productName)
+	rows, err := repo.db.Query(getProductByName, productName)
 
 	if err != nil {
 		log.Println(err)
@@ -61,7 +64,7 @@ func (repo *repository) GetByName(productName string) domain.Product {
 	}
 
 	for rows.Next() {
-		if err := rows.Scan(&product.ID, &product.Name, &product.Qty, &product.Price); err != nil {
+		if err := rows.Scan(&product.Name); err != nil {
 			log.Println(err)
 			return product
 		}
