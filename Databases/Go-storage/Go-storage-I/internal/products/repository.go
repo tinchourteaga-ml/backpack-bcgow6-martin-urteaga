@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	Store(product *domain.Product) (*domain.Product, error)
 	GetByName(productName string) domain.Product
+	GetAll() ([]domain.Product, error)
 }
 
 type repository struct {
@@ -19,6 +20,7 @@ type repository struct {
 var (
 	storeProduct     = "INSERT INTO products(name, qty, price, id_warehouse) VALUES (?, ?, ?, ?)"
 	getProductByName = "SELECT name FROM products WHERE products.name = ?"
+	getAllProducts   = "SELECT id, name, qty, price, id_warehouse FROM products"
 )
 
 func newRepository(storage *sql.DB) Repository {
@@ -71,4 +73,26 @@ func (repo *repository) GetByName(productName string) domain.Product {
 	}
 
 	return product
+}
+
+func (repo *repository) GetAll() ([]domain.Product, error) {
+	var products []domain.Product
+
+	rows, err := repo.db.Query(getAllProducts)
+
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	for rows.Next() {
+		var product domain.Product
+		if err := rows.Scan(&product.ID, &product.Name, &product.Qty, &product.Price, &product.WarehouseID); err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		products = append(products, product)
+	}
+
+	return products, nil
 }
