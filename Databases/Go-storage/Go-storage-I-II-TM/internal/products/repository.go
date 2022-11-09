@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I/internal/products/domain"
+	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I-II-TM/internal/products/domain"
 )
 
 type Repository interface {
