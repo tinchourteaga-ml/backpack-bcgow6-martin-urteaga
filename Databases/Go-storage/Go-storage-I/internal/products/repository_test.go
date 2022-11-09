@@ -71,3 +71,20 @@ func TestDelete(t *testing.T) {
 
 	assert.Nil(t, err)
 }
+
+func TestUpdate(t *testing.T) {
+	product := domain.Product{
+		ID:          2,
+		Name:        "parlante",
+		Qty:         6,
+		Price:       38500,
+		WarehouseID: 7,
+	}
+
+	repo := newRepository(db)
+
+	result, err := repo.Update(product)
+
+	assert.Nil(t, err)
+	assert.Equal(t, product, result)
+}

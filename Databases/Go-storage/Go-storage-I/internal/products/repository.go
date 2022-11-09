@@ -143,7 +143,7 @@ func (repo *repository) Update(product domain.Product) (domain.Product, error) {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(product.Name, product.Qty, product.Price, product.WarehouseID)
+	_, err = stmt.Exec(product.Name, product.Qty, product.Price, product.WarehouseID, product.ID)
 
 	if err != nil {
 		log.Println(err)
