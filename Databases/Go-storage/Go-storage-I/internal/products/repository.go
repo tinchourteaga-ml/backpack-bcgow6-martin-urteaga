@@ -2,6 +2,7 @@ package products
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I/internal/products/domain"
@@ -11,6 +12,7 @@ type Repository interface {
 	Store(product *domain.Product) (*domain.Product, error)
 	GetByName(productName string) domain.Product
 	GetAll() ([]domain.Product, error)
+	Delete(id int) error
 }
 
 type repository struct {
@@ -21,6 +23,7 @@ var (
 	storeProduct     = "INSERT INTO products(name, qty, price, id_warehouse) VALUES (?, ?, ?, ?)"
 	getProductByName = "SELECT name FROM products WHERE products.name = ?"
 	getAllProducts   = "SELECT id, name, qty, price, id_warehouse FROM products"
+	deleteProduct    = "DELETE FROM products WHERE products.id = ?"
 )
 
 func newRepository(storage *sql.DB) Repository {
@@ -95,4 +98,33 @@ func (repo *repository) GetAll() ([]domain.Product, error) {
 	}
 
 	return products, nil
+}
+
+func (repo *repository) Delete(id int) error {
+	stmt, err := repo.db.Prepare(deleteProduct)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	result, err := stmt.Exec(id)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	affect, err := result.RowsAffected()
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if affect < 1 {
+		return errors.New("no se encontro el producto indicado")
+	}
+
+	return nil
 }
