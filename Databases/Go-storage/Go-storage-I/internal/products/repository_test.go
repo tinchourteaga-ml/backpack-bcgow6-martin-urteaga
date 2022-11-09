@@ -8,8 +8,9 @@ import (
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-I/pkg/store"
 )
 
-/* func TestStore(t *testing.T) {
-	db := store.Init()
+var db = store.Init()
+
+func TestStore(t *testing.T) {
 	product := domain.Product{
 		Name:        "Heladera",
 		Qty:         1,
@@ -21,15 +22,11 @@ import (
 
 	result, err := repo.Store(&product)
 
-	if err != nil {
-		log.Println(err)
-	}
-
+	assert.Nil(t, err)
 	assert.Equal(t, &product, result)
 }
 
 func TestGetByName(t *testing.T) {
-	db := store.Init()
 	product := domain.Product{
 		Name: "televisor",
 	}
@@ -39,11 +36,9 @@ func TestGetByName(t *testing.T) {
 	result := repo.GetByName(product.Name)
 
 	assert.Equal(t, product.Name, result.Name)
-} */
+}
 
 func TestGetAll(t *testing.T) {
-	db := store.Init()
-
 	var products = []domain.Product{
 		{
 			ID:          1,
@@ -67,4 +62,12 @@ func TestGetAll(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, products, result)
+}
+
+func TestDelete(t *testing.T) {
+	repo := newRepository(db)
+
+	err := repo.Delete(1)
+
+	assert.Nil(t, err)
 }

@@ -13,6 +13,7 @@ type Repository interface {
 	GetByName(productName string) domain.Product
 	GetAll() ([]domain.Product, error)
 	Delete(id int) error
+	Update(product domain.Product) (domain.Product, error)
 }
 
 type repository struct {
@@ -24,6 +25,7 @@ var (
 	getProductByName = "SELECT name FROM products WHERE products.name = ?"
 	getAllProducts   = "SELECT id, name, qty, price, id_warehouse FROM products"
 	deleteProduct    = "DELETE FROM products WHERE products.id = ?"
+	updateProduct    = "UPDATE products AS p SET p.name = ?, p.qty = ?, p.price = ?, p.id_warehouse = ? WHERE p.id = ?"
 )
 
 func newRepository(storage *sql.DB) Repository {
@@ -129,4 +131,24 @@ func (repo *repository) Delete(id int) error {
 	}
 
 	return nil
+}
+
+func (repo *repository) Update(product domain.Product) (domain.Product, error) {
+	stmt, err := repo.db.Prepare(updateProduct)
+
+	if err != nil {
+		log.Println(err)
+		return domain.Product{}, err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(product.Name, product.Qty, product.Price, product.WarehouseID)
+
+	if err != nil {
+		log.Println(err)
+		return domain.Product{}, err
+	}
+
+	return product, nil
 }
