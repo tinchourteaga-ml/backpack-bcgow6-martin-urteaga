@@ -1,90 +1,43 @@
 package products
 
 import (
+	"context"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-II-TT/internal/products/domain"
-	"github.com/tinchourteaga-ml/backpack-bcgow6-martin-urteaga/Databases/Go-storage/Go-storage-II-TT/pkg/store"
 )
 
-var db = store.Init()
+func TestStoreMock(t *testing.T) {
+	db, mock, err := sqlmock.New()
 
-func TestStore(t *testing.T) {
+	assert.NoError(t, err)
+
+	defer db.Close()
+
+	mock.ExpectPrepare("INSERT INTO products")
+	mock.ExpectExec("INSERT INTO products").WillReturnResult(sqlmock.NewResult(5, 1))
+
+	columns := []string{"id", "name", "qty", "price", "id_warehouse"}
+	rows := sqlmock.NewRows(columns)
+	productID := 5
+
+	rows.AddRow(productID, "", "", "", "")
+	mock.ExpectQuery("SELECT .* FROM products").WithArgs(productID).WillReturnRows(rows)
+
+	repository := newRepository(db)
+	ctx := context.TODO()
 	product := domain.Product{
-		Name:        "Heladera",
-		Qty:         1,
-		Price:       120000,
-		WarehouseID: 1,
+		ID: productID,
 	}
 
-	repo := newRepository(db)
+	getResult := repository.GetOne(ctx, productID)
+	assert.Empty(t, getResult)
 
-	result, err := repo.Store(&product)
-
-	assert.Nil(t, err)
-	assert.Equal(t, &product, result)
-}
-
-func TestGetByName(t *testing.T) {
-	product := domain.Product{
-		Name: "televisor",
-	}
-
-	repo := newRepository(db)
-
-	result := repo.GetByName(product.Name)
-
-	assert.Equal(t, product.Name, result.Name)
-}
-
-func TestGetAll(t *testing.T) {
-	var products = []domain.Product{
-		{
-			ID:          1,
-			Name:        "heladera",
-			Qty:         1,
-			Price:       120000,
-			WarehouseID: 0,
-		},
-		{
-			ID:          2,
-			Name:        "televisor",
-			Qty:         3,
-			Price:       75000,
-			WarehouseID: 0,
-		},
-	}
-
-	repo := newRepository(db)
-
-	result, err := repo.GetAll()
-
-	assert.Nil(t, err)
-	assert.Equal(t, products, result)
-}
-
-func TestDelete(t *testing.T) {
-	repo := newRepository(db)
-
-	err := repo.Delete(1)
-
-	assert.Nil(t, err)
-}
-
-func TestUpdate(t *testing.T) {
-	product := domain.Product{
-		ID:          2,
-		Name:        "parlante",
-		Qty:         6,
-		Price:       38500,
-		WarehouseID: 7,
-	}
-
-	repo := newRepository(db)
-
-	result, err := repo.Update(product)
-
-	assert.Nil(t, err)
-	assert.Equal(t, product, result)
+	result, err := repository.Store(ctx, &product)
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, product.ID, result.ID)
+	assert.NoError(t, mock.ExpectationsWereMet())
 }

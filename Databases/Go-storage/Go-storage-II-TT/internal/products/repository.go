@@ -1,6 +1,7 @@
 package products
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"log"
@@ -9,11 +10,11 @@ import (
 )
 
 type Repository interface {
-	Store(product *domain.Product) (*domain.Product, error)
-	GetByName(productName string) domain.Product
-	GetAll() ([]domain.Product, error)
-	Delete(id int) error
-	Update(product domain.Product) (domain.Product, error)
+	Store(ctx context.Context, product *domain.Product) (*domain.Product, error)
+	GetOne(ctx context.Context, productID int) domain.Product
+	GetAll(ctx context.Context) ([]domain.Product, error)
+	Delete(ctx context.Context, id int) error
+	Update(ctx context.Context, product domain.Product) (domain.Product, error)
 }
 
 type repository struct {
@@ -21,11 +22,11 @@ type repository struct {
 }
 
 var (
-	storeProduct     = "INSERT INTO products(name, qty, price, id_warehouse) VALUES (?, ?, ?, ?)"
-	getProductByName = "SELECT name FROM products WHERE products.name = ?"
-	getAllProducts   = "SELECT id, name, qty, price, id_warehouse FROM products"
-	deleteProduct    = "DELETE FROM products WHERE products.id = ?"
-	updateProduct    = "UPDATE products AS p SET p.name = ?, p.qty = ?, p.price = ?, p.id_warehouse = ? WHERE p.id = ?"
+	storeProduct   = "INSERT INTO products(name, qty, price, id_warehouse) VALUES (?, ?, ?, ?)"
+	getProductByID = "SELECT name FROM products WHERE products.id = ?"
+	getAllProducts = "SELECT id, name, qty, price, id_warehouse FROM products"
+	deleteProduct  = "DELETE FROM products WHERE products.id = ?"
+	updateProduct  = "UPDATE products AS p SET p.name = ?, p.qty = ?, p.price = ?, p.id_warehouse = ? WHERE p.id = ?"
 )
 
 func newRepository(storage *sql.DB) Repository {
@@ -34,7 +35,7 @@ func newRepository(storage *sql.DB) Repository {
 	}
 }
 
-func (repo *repository) Store(product *domain.Product) (*domain.Product, error) {
+func (repo *repository) Store(ctx context.Context, product *domain.Product) (*domain.Product, error) {
 	stmt, err := repo.db.Prepare(storeProduct)
 
 	if err != nil {
@@ -60,10 +61,10 @@ func (repo *repository) Store(product *domain.Product) (*domain.Product, error) 
 	return product, nil
 }
 
-func (repo *repository) GetByName(productName string) domain.Product {
+func (repo *repository) GetOne(ctx context.Context, productID int) domain.Product {
 	var product domain.Product
 
-	rows, err := repo.db.Query(getProductByName, productName)
+	rows, err := repo.db.Query(getProductByID, productID)
 
 	if err != nil {
 		log.Println(err)
@@ -80,7 +81,7 @@ func (repo *repository) GetByName(productName string) domain.Product {
 	return product
 }
 
-func (repo *repository) GetAll() ([]domain.Product, error) {
+func (repo *repository) GetAll(ctx context.Context) ([]domain.Product, error) {
 	var products []domain.Product
 
 	rows, err := repo.db.Query(getAllProducts)
@@ -102,7 +103,7 @@ func (repo *repository) GetAll() ([]domain.Product, error) {
 	return products, nil
 }
 
-func (repo *repository) Delete(id int) error {
+func (repo *repository) Delete(ctx context.Context, id int) error {
 	stmt, err := repo.db.Prepare(deleteProduct)
 
 	if err != nil {
@@ -133,7 +134,7 @@ func (repo *repository) Delete(id int) error {
 	return nil
 }
 
-func (repo *repository) Update(product domain.Product) (domain.Product, error) {
+func (repo *repository) Update(ctx context.Context, product domain.Product) (domain.Product, error) {
 	stmt, err := repo.db.Prepare(updateProduct)
 
 	if err != nil {
